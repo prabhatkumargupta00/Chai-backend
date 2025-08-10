@@ -80,7 +80,7 @@ userSchema.methods.generateAccessToken = async function () {
 userSchema.methods.generateRefreshToken = async function () {
     return jwt.sign(
         {
-            _id: this._id,              // refrehs token have very less data compared to access token
+            _id: this._id,             // refrehs token have very less data compared to access token
             // email: this.email,
             // username: this.username,
             // fullName: this.fullName
