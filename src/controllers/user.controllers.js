@@ -10,11 +10,11 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const generateAccessAndRefreshTokens = async (userId)=>{
     try {
         const user = await User.findById(userId)
-        const accessToken = generateAccessToken()
-        const refreshToken = generateRefreshToken()
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
 
         user.refreshToken = refreshToken;
-        await user.save({validateBeforeSave : false})
+        await user.save({ validateBeforeSave: false })
 
         return{accessToken, refreshToken}
 
@@ -144,7 +144,7 @@ const loginUser = asyncHandler(async (req, res) =>{
     }
 
     const user = await User.findOne({
-        $or : ({email, username})
+        $or : [{email}, {username}]
     })
 
     if(!user){
@@ -159,9 +159,9 @@ const loginUser = asyncHandler(async (req, res) =>{
         throw new ApiError(401, "Invalid user credential.")
     }
 
-    const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(user._id)
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
 
-    const loggedInUser = User.findById(user._id).select("-password -refreshToken")
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
     // Cookies are beDefault modifiable by anyone but we want to make it secure so we add these options where " httpOnly: true," means it is only changed by the served and "secure : true" keeps it secure.
     const options = {
@@ -175,11 +175,11 @@ const loginUser = asyncHandler(async (req, res) =>{
     .cookie("refreshToken", refreshToken, options)
     .json(
         new ApiResponse(
-            200,
+            200, 
             {
-                user : loggedInUser, accessToken, refreshToken
+                user: loggedInUser, accessToken, refreshToken
             },
-            "User logged in successfully ! "
+            "User logged In Successfully"
         )
     )
 
