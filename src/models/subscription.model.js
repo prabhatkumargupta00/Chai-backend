@@ -5,7 +5,7 @@ const subscriptionSchema = new Schema({
         type : Schema.Types.ObjectId,       // The one who is subscribing
         ref : "User"
     },
-    ChannelMergerNode: {
+    channel: {
         type : Schema.Types.ObjectId,       // The one to whom subscriber is subscribing
         ref : "User"
     },
